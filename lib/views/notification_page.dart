@@ -7,10 +7,21 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //get the notification message and display on screen
-    final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final RemoteMessage message = args['message'];
+    final String state = args['state'];
+
+  String title;
+  if(state == 'foreground'){
+    title = 'Notified in Foreground';
+  } else if(state == 'background'){
+    title = 'Notified in background';
+  } else {
+    title = 'Notified while terminated';
+  }
 
     return Scaffold(
-      appBar: AppBar(title: Text("Notification")),
+      appBar: AppBar(title: Text(title)),
       body: Column(
         children: [
           Text(message.notification!.title.toString()),
