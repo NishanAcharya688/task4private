@@ -1,57 +1,37 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:task4/main.dart';
 
 class FirebaseApi {
-  //create an instance of Firebase Messaging
   final _firebaseMessaging = FirebaseMessaging.instance;
-  
-  //function to initialize notifications
-  Future<void> initNotifications() async{
-    //request permission from user (will prompt user)
+
+  Future<void> initNotifications() async {
     await _firebaseMessaging.requestPermission();
-
-    //fetch the FCM token for this service
     final fCMToken = await _firebaseMessaging.getToken();
-
-    //print the token (normally you would send this to your server)
     print('Token: $fCMToken');
 
-    //initialize further settings for push noti
     initPushNotifications();
-    listenToForegroundNotifications();
+    listenToForegroundNotifications(); // Add this
   }
-  
-  //function to handle received messages
-  void handleMessage(RemoteMessage? message, {required String notificationState}){
-    // if message null, do nothing
-    if(message == null) return;
-    
-    //navigate to new screen when message is received and user taps notification
+
+  void handleMessage(RemoteMessage? message) {
+    if (message == null) return;
+
     navigatorKey.currentState?.pushNamed(
       '/notification_screen',
-      arguments: {
-        'message' : message,
-        'state' : notificationState, // Pass the state
-      }
+      arguments: message,
     );
   }
 
-  //function to initialize foreground and background settings
-  Future initPushNotifications() async{
-    //handle notification if the app was terminated and now opened
-    await FirebaseMessaging.instance.getInitialMessage().then(
-      (message) => handleMessage(message, notificationState: 'terminated'),
-    );
-
-    //attach event listeners for when a notification opens the app
-    FirebaseMessaging.onMessageOpenedApp.listen(
-      (message) => handleMessage(message, notificationState: 'background'),
-    );
+  Future<void> initPushNotifications() async {
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
   }
+
   void listenToForegroundNotifications() {
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
+        // Display the notification content in the foreground
         showDialog(
           context: navigatorKey.currentContext!,
           builder: (context) => AlertDialog(
@@ -59,15 +39,8 @@ class FirebaseApi {
             content: Text(message.notification!.body ?? 'No Body'),
             actions: [
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  handleMessage(message, notificationState: 'foreground');
-                },
-                child: Text('View'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(), // Dismiss dialog
-                child: Text('Dismiss'),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
               ),
             ],
           ),
