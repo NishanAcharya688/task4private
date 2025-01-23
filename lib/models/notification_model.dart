@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class NotificationModel {
+  final int id;
   final String title;
   final String body;
   final DateTime timestamp;
@@ -8,6 +9,7 @@ class NotificationModel {
   bool isRead;
 
   NotificationModel({
+    required this.id,
     required this.title,
     required this.body,
     required this.timestamp,
@@ -18,6 +20,7 @@ class NotificationModel {
   // Convert NotificationModel to JSON
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'body': body,
       'timestamp': timestamp.toIso8601String(),
@@ -29,6 +32,7 @@ class NotificationModel {
   // Convert JSON back to NotificationModel
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
+      id: json['id'],
       title: json['title'],
       body: json['body'],
       timestamp: DateTime.parse(json['timestamp']),

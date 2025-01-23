@@ -5,36 +5,51 @@ import 'dart:convert';
 
 class NotificationProvider with ChangeNotifier {
   List<NotificationModel> _notifications = [];
-  int _unreadCount = 0;
+  int _newCount = 0;
+  int _nextId = 0;
 
   NotificationProvider() {
     _loadNotifications(); // Load notifications from SharedPreferences
   }
 
   List<NotificationModel> get notifications => _notifications;
-  int get unreadCount => _unreadCount;
+  int get newCount => _newCount;
 
   void addNotification(NotificationModel notification) async {
-    _notifications.add(notification);
+    // Assign the next available ID
+    final notificationWithId = NotificationModel(
+      id: _nextId++, // Auto-increment the ID
+      title: notification.title,
+      body: notification.body,
+      isRead: notification.isRead,
+      timestamp: notification.timestamp,
+      redirectPage: notification.redirectPage,
+    );
 
-    if (!notification.isRead) {
-      _unreadCount++;
-    }
+    _notifications.add(notificationWithId);
+    _newCount++;
 
     // Save updated list to SharedPreferences
     await _saveNotifications();
     notifyListeners();
   }
 
-  void markAllAsRead() async {
-    for (var notification in _notifications) {
-      notification.isRead = true;
-    }
-    _unreadCount = 0;
-
+  void noNewNotifications() async {
+    _newCount = 0;
     // Save updated list to SharedPreferences
     await _saveNotifications();
     notifyListeners();
+  }
+
+  void markAsRead(int id) async {
+    final index = _notifications.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      _notifications[index].isRead = true;
+      _newCount =
+          _notifications.where((n) => !n.isRead).length; // Update newCount
+      await _saveNotifications();
+      notifyListeners(); // Notify listeners to rebuild the UI
+    }
   }
 
   Future<void> _saveNotifications() async {
@@ -42,13 +57,13 @@ class NotificationProvider with ChangeNotifier {
     final notificationJson =
         _notifications.map((notification) => notification.toJson()).toList();
     await prefs.setString('notifications', json.encode(notificationJson));
-    await prefs.setInt('unreadCount', _unreadCount);
+    await prefs.setInt('newCount', _newCount);
   }
 
   Future<void> _loadNotifications() async {
     final prefs = await SharedPreferences.getInstance();
     final notificationString = prefs.getString('notifications');
-    final savedUnreadCount = prefs.getInt('unreadCount') ?? 0;
+    final savedNewCount = prefs.getInt('newCount') ?? 0;
 
     if (notificationString != null) {
       final decodedNotifications = json.decode(notificationString) as List;
@@ -58,7 +73,7 @@ class NotificationProvider with ChangeNotifier {
           .toList();
     }
 
-    _unreadCount = savedUnreadCount;
+    _newCount = savedNewCount;
     notifyListeners();
   }
 }

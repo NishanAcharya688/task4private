@@ -9,7 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    final newCount = context.watch<NotificationProvider>().newCount;
 
     return AppBar(
       title: Text(title),
@@ -20,9 +20,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.notifications),
               onPressed: () {
                 Navigator.pushNamed(context, '/notification_page');
+                context.read<NotificationProvider>().noNewNotifications();
               },
             ),
-            if (unreadCount > 0)
+            if (newCount > 0)
               Positioned(
                 right: 8,
                 top: 8,
@@ -33,7 +34,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Text(
-                    unreadCount.toString(),
+                    newCount.toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,

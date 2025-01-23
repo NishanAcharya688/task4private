@@ -5,6 +5,9 @@ import 'api/firebase_api.dart';
 import 'providers/notification_provider.dart';
 import 'views/home_page.dart';
 import 'views/notification_page.dart';
+import 'views/page1.dart';
+import 'views/page2.dart';
+import 'views/page3.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -36,6 +39,9 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HomePage(),
           '/notification_page': (context) => const NotificationPage(),
+          '/page1': (context) => Page1(),
+          '/page2': (context) => Page2(),
+          '/page3': (context) => Page3(),
         },
       ),
     );
