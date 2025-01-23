@@ -20,9 +20,6 @@ class NotificationPage extends StatelessWidget {
           return ListTile(
             title: Text(notification.title),
             subtitle: Text(notification.body),
-            trailing: notification.isRead
-                ? null
-                : const Icon(Icons.circle, color: Colors.red, size: 10),
           );
         },
       ),
