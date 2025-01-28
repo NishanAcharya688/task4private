@@ -62,6 +62,13 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners(); // Notify listeners to rebuild the UI
   }
 
+  void deleteAllNotifications() async {
+    _notifications.clear(); // Clear the notifications list
+    _newCount = 0; // Reset new count
+    await _saveNotifications(); // Save the updated list
+    notifyListeners(); // Notify listeners to update the UI
+  }
+
   Future<void> _saveNotifications() async {
     final prefs = await SharedPreferences.getInstance();
     final notificationJson =

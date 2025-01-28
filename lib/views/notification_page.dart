@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
@@ -9,12 +10,12 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notifications = context.watch<NotificationProvider>().notifications;
-    context.watch<NotificationProvider>().noNewNotifications();
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Notifications'),
       body: Column(
         children: [
+          // Notifications list
           Expanded(
             child: ListView.builder(
               itemCount: notifications.length,
@@ -47,24 +48,67 @@ class NotificationPage extends StatelessWidget {
               },
             ),
           ),
-          // Mark All as Read button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                context.read<NotificationProvider>().markAllAsRead();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(16),
-              ),
-              child: const Text(
-                'Mark All as Read',
-                style: TextStyle(fontSize: 16),
-              ),
+          // Two simple buttons at the bottom
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                // Mark All as Read button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<NotificationProvider>().markAllAsRead();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: CupertinoColors.systemGrey4),
+                    child: const Text('Mark All as Read'),
+                  ),
+                ),
+                const SizedBox(width: 8), // Space between buttons
+                // Delete All button with confirmation dialog
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final shouldDelete =
+                          await _showDeleteConfirmationDialog(context);
+                      if (shouldDelete) {
+                        context
+                            .read<NotificationProvider>()
+                            .deleteAllNotifications();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: CupertinoColors.systemGrey4),
+                    child: const Text('Delete All'),
+                  ),
+                ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );
+  }
+
+  // Confirmation dialog for Delete All button
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Deletion'),
+        content:
+            const Text('Are you sure you want to delete all notifications?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    ).then((value) => value ?? false); // Default to false if dismissed
   }
 }
