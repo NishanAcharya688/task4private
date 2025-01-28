@@ -25,7 +25,7 @@ class NotificationPage extends StatelessWidget {
             ),
             margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             child: ListTile(
-              title: Text(notification.title),
+              title: Text('${notification.title} - ${notification.isRead}'),
               subtitle: Text(notification.body),
               onTap: () {
                 context
