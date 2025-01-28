@@ -39,9 +39,9 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HomePage(),
           '/notification_page': (context) => const NotificationPage(),
-          '/page1': (context) => Page1(),
-          '/page2': (context) => Page2(),
-          '/page3': (context) => Page3(),
+          '/page1': (context) => const Page1(),
+          '/page2': (context) => const Page2(),
+          '/page3': (context) => const Page3(),
         },
       ),
     );

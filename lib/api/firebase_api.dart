@@ -54,7 +54,7 @@ class FirebaseApi {
             navigatorKey.currentState?.pushNamed(notification.redirectPage);
           } else {
             // Retry after a short delay if the navigator state is not ready
-            Future.delayed(Duration(milliseconds: 100), () {
+            Future.delayed(const Duration(milliseconds: 100), () {
               navigatorKey.currentState?.pushNamed(notification.redirectPage);
             });
           }

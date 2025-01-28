@@ -26,7 +26,7 @@ class NotificationProvider with ChangeNotifier {
       redirectPage: notification.redirectPage,
     );
 
-    _notifications.add(notificationWithId);
+    _notifications.insert(0, notificationWithId);
     _newCount++;
 
     // Save updated list to SharedPreferences
@@ -45,11 +45,21 @@ class NotificationProvider with ChangeNotifier {
     final index = _notifications.indexWhere((n) => n.id == id);
     if (index != -1) {
       _notifications[index].isRead = true;
-      _newCount =
-          _notifications.where((n) => !n.isRead).length; // Update newCount
+      //=================================================================================NEW COUNT=========
+      // _newCount =
+      // _notifications.where((n) => !n.isRead).length; // Update newCount
       await _saveNotifications();
       notifyListeners(); // Notify listeners to rebuild the UI
     }
+  }
+
+  void markAllAsRead() async {
+    for (var notification in _notifications) {
+      notification.isRead = true; // Mark each notification as read
+    }
+    _newCount = 0; // All notifications are read, so new count is 0,
+    await _saveNotifications(); // Save updated notifications
+    notifyListeners(); // Notify listeners to rebuild the UI
   }
 
   Future<void> _saveNotifications() async {

@@ -6,8 +6,8 @@ class Page3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Page 3')),
-      body: Center(child: Text('This is Page 3')),
+      appBar: AppBar(title: const Text('Page 3')),
+      body: const Center(child: Text('This is Page 3')),
     );
   }
 }
